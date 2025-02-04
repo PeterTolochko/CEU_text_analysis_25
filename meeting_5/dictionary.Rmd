@@ -203,7 +203,8 @@ intercoder_set <- intercoder_set %>%
 
 We then create several duplicates of the intercoder reliability set, one for each coder. We create separate files so that coders can so that everyone codes individually and does not peek by mistake.
 To each of these sets we add the coder name in a new column called `coder_name`.
-For this example, we now need 2 volunteers. Who would like to code?
+
+For this example, we now need 2 volunteers.
 
 ```{r}
 
@@ -302,7 +303,7 @@ We pick 130 headlines randomly.
 
 ```{r}
 
-set.seed(789) # setting a seed ensures that the random selection can be repeated in the same way
+set.seed(666) 
 
 number_of_coders <- 14 # number of coders
 
@@ -319,7 +320,6 @@ manual_set <- manual_set %>%
   mutate(actors_m = "") %>%
   select(id, actors_m, headline)
 
-# names_vector <- rep(c("C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12", "C13", "C14"), each = 10)
 
 names_vector <- rep(c(paste0("C", 1:number_of_coders)), each = 10)
 
