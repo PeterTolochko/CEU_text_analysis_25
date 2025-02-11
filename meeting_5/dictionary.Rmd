@@ -55,7 +55,7 @@ The keywords are written as regular expressions.
 
 politicians <- c("tony blair", "gordon brown", "david cameron", "theresa may", "boris johnson", "prime minister")
 
-parties <- c("conservative party", "tor(ies|y)","ukip","labour party", "liberal democrats", "scottish national party", "green party")
+parties <- c("conservative party", "tor(ies|y)","ukip", "labour party", "liberal democrats", "scottish national party", "green party")
 
 ```
 
@@ -110,7 +110,11 @@ Count keywords for each group for each row and create new columns
 ```{r}
 
 articles_en$politicians_count <- apply(articles_en, 1, function(row) sum(count_keywords(row["headline"], politicians)))
+
 articles_en$parties_count <- apply(articles_en, 1, function(row) sum(count_keywords(row["headline"], parties)))
+
+head(articles_en$politicians_count)
+head(articles_en$parties_count)
 
 
 table(articles_en$politicians_count)
@@ -134,6 +138,7 @@ Check which keywords were found for each group for each row and create a single 
 ```{r}
 
 articles_en$politicians_keywords_found <- apply(articles_en, 1, function(row) check_keywords(row["headline"], politicians))
+
 articles_en$parties_keywords_found <- apply(articles_en, 1, function(row) check_keywords(row["headline"], parties))
 
 table(articles_en$politicians_keywords_found)
@@ -152,7 +157,7 @@ articles_en <- articles_en %>%
   mutate(
     actors_d = case_when(
       parties_count >= 1 | politicians_count >= 1 ~ 1,
-      TRUE ~ 0
+      .default = 0
     ),
     actors_d = if_else(is.na(actors_d), 0, actors_d)
   )
@@ -344,6 +349,15 @@ After you finish coding, we read all sheets back into Rstudio (now with manual c
 
 manual_set_coded <- read_sheet(sheet_id_manual)
 
+
+```
+
+Prepared manual coded sheet:
+
+```{r}
+
+manual_set_coded <- read_csv("manual_set.csv")
+
 ```
 
 We need to create a data set, where the manual and automated classifications are included.
@@ -411,7 +425,7 @@ To obtain precision, we calculate:
 ```{r}
 
 precision <- (sum(articles_coded_d_m$Relevant_andRetrieved, na.rm=TRUE))/(sum(articles_coded_d_m$notRelevant_butRetrieved, na.rm=TRUE) + (sum(articles_coded_d_m$Relevant_andRetrieved, na.rm=TRUE)))
-precision # 
+precision
 
 ```
 
@@ -484,7 +498,7 @@ bing_dictionary <- get_sentiments("bing")
 ```{r}
 
 
-movie_reviews <- read_csv("/Users/petrotolochko/Desktop/Teaching/CEU_text_as_data/meeting_5/reviews.csv")
+movie_reviews <- read_csv("/Users/petrotolochko/Desktop/Teaching/CEU_text_analysis_25/meeting_5/reviews.csv")
 movie_reviews <- movie_reviews %>%
   mutate(review_id = 1:nrow(.))
 
