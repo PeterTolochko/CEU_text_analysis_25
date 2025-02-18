@@ -304,7 +304,7 @@ If alpha is large enough, we consider the quality of our manual coding as suffic
 
 ## Creating a manually coded baseline
 
-We pick 130 headlines randomly. 
+We pick 140 headlines randomly. 
 
 ```{r}
 
@@ -356,7 +356,7 @@ Prepared manual coded sheet:
 
 ```{r}
 
-manual_set_coded <- read_csv("manual_set.csv")
+manual_set_coded <- read_csv("/Users/petrotolochko/Desktop/Teaching/CEU_text_analysis_25/meeting_5/manual_set.csv")
 
 ```
 
@@ -499,6 +499,8 @@ bing_dictionary <- get_sentiments("bing")
 
 
 movie_reviews <- read_csv("/Users/petrotolochko/Desktop/Teaching/CEU_text_analysis_25/meeting_5/reviews.csv")
+
+
 movie_reviews <- movie_reviews %>%
   mutate(review_id = 1:nrow(.))
 
