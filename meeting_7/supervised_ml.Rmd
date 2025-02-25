@@ -352,7 +352,7 @@ plot_conf_mat <- function(reviews_test, color){ # can set the wanted color
   p <- ggplot(conf_mat, aes(Var1, Var2, fill = Freq)) +
     geom_tile() +
     geom_text(aes(label = round(Freq,2))) +
-    labs(x = "True labels", y = "Predicted labels", #title = "Confusion matrix of GPT-4 on English sentiment",
+    labs(x = "True labels", y = "Predicted labels",
          fill = "Proportion") +
     theme(plot.title = element_text(size = 16, hjust = 0.5),
           legend.title = element_text(size = 12),
