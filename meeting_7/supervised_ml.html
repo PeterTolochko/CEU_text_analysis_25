@@ -411,11 +411,13 @@ following tutorials specifically for machine learning.</p>
 <p><a href="https://content-analysis-with-r.com/5-machine_learning.html" class="uri">https://content-analysis-with-r.com/5-machine_learning.html</a>
 <a href="https://tutorials.quanteda.io/basic-operations/corpus/corpus/" class="uri">https://tutorials.quanteda.io/basic-operations/corpus/corpus/</a></p>
 <p>Create a corpus and look at a summary.</p>
-<pre class="r"><code>library(quanteda)</code></pre>
+<pre class="r"><code># install.packages(&quot;quanteda&quot;)
+
+library(quanteda)</code></pre>
 <pre><code>## Warning: package &#39;quanteda&#39; was built under R version 4.3.3</code></pre>
 <pre><code>## Warning in .recacheSubclasses(def@className, def, env): undefined subclass
 ## &quot;ndiMatrix&quot; of class &quot;replValueSp&quot;; definition not updated</code></pre>
-<pre><code>## Package version: 4.1.0
+<pre><code>## Package version: 4.2.0
 ## Unicode version: 14.0
 ## ICU version: 71.1</code></pre>
 <pre><code>## Parallel computing: disabled</code></pre>
@@ -468,8 +470,9 @@ dfm_reviews</code></pre>
 ##   text5    0      0    0       0   0     0  0    0      0    0
 ##   text6    0      0    0       0   0     0  0    0      0    1
 ## [ reached max_ndoc ... 10,656 more documents, reached max_nfeat ... 13,945 more features ]</code></pre>
-<pre class="r"><code>dfm_reviews_trim &lt;- dfm_trim(dfm_reviews, min_docfreq = 2, verbose=TRUE) # remove words that appear in less than 2 documents
-dfm_reviews_trim</code></pre>
+<pre class="r"><code>dfm_reviews_trim &lt;- dfm_trim(dfm_reviews, min_docfreq = 2, verbose=TRUE) # remove words that appear in less than 2 documents</code></pre>
+<pre><code>## dfm_trim() changed from 13,955 features (10,662 documents) to 7,554 features (10,662 documents)</code></pre>
+<pre class="r"><code>dfm_reviews_trim</code></pre>
 <pre><code>## Document-feature matrix of: 10,662 documents, 7,554 features (99.87% sparse) and 2 docvars.
 ##        features
 ## docs    rock destin 21st centuri new conan go make splash even
@@ -493,11 +496,13 @@ dfm_test &lt;- dfm_subset(dfm_reviews_trim, !id_numeric %in% id_train)</code></p
 <p>Fit a Naïve Bayes Classifier on the training dfm and save the learned
 model in the object ‘model.NB’. The Naïve Bayes Classifier is part of
 the library quanteda.textmodels.</p>
-<pre class="r"><code>library(quanteda.textmodels)
-model_nb &lt;- textmodel_nb(dfm_train, dfm_train$polarity, prior = &quot;docfreq&quot;) #Prior distributions refer to the prior probabilities assigned to the training classes</code></pre>
+<pre class="r"><code># install.packages(&quot;quanteda.textmodels&quot;)
+library(quanteda.textmodels)</code></pre>
+<pre><code>## Warning: package &#39;quanteda.textmodels&#39; was built under R version 4.3.3</code></pre>
+<pre class="r"><code>model_nb &lt;- textmodel_nb(dfm_train, dfm_train$polarity, prior = &quot;docfreq&quot;) #Prior distributions refer to the prior probabilities assigned to the training classes</code></pre>
 <p>Fit a Linear SVM classifier on the training dfm and save the learned
 model in the object ‘model.svm’.</p>
-<pre class="r"><code>model_svm &lt;- textmodel_svm(dfm_train, dfm_train$polarity)</code></pre>
+<pre class="r"><code>model_svm &lt;- textmodel_svmlin(dfm_train, dfm_train$polarity)</code></pre>
 </div>
 <div id="predict-for-the-test-set" class="section level1">
 <h1>Predict for the test set</h1>
@@ -532,7 +537,6 @@ model in the object ‘model.svm’.</p>
 ## negative 0.0002024 6.073e-05 0.002207
 ## positive 0.0001193 1.392e-04 0.002366</code></pre>
 <pre class="r"><code>pred_svm &lt;- predict(model_svm, dfm_test, force = TRUE) # force = True will force your test data to give identical features (and ordering of features) to the training set</code></pre>
-<pre><code>## Warning: 105 features in newdata not used in prediction.</code></pre>
 <p>Add the labels predicted by the model to the initial dataframe. Name
 the new column polarity_ml.</p>
 <pre class="r"><code>colnames(reviews)</code></pre>
@@ -587,18 +591,7 @@ reviews_test &lt;- reviews_test %&gt;%
       polarity_svm == &#39;positive&#39; ~ 1,
       polarity_svm == &#39;negative&#39; ~ 2
     ))</code></pre>
-<pre class="r"><code># metrics &lt;- function(reviews_test, categ) {
-#   results_table &lt;- table(ifelse(reviews_test$polarity == categ, 1, 0),
-#   ifelse(reviews_test$polarity_svm == categ, 1, 0))
-#   recall &lt;- results_table[2, 2] / (results_table[2, 2] + results_table[2, 1])
-#   precision &lt;- results_table[2, 2] / (results_table[2, 2] + results_table[1, 2])
-#   f1 &lt;- 2 * recall * precision / (recall + precision)
-# 
-#   return(c(precision, recall, f1))
-# }
-
-
-metrics &lt;- function(reviews_test, categ, model = c(&quot;nb&quot;, &quot;svm&quot;)) {
+<pre class="r"><code>metrics &lt;- function(reviews_test, categ, model = c(&quot;nb&quot;, &quot;svm&quot;)) {
   # Ensure the model argument is one of the allowed values
   model &lt;- match.arg(model)
   
@@ -717,10 +710,10 @@ or a hex code.</p>
 res_pos_sent</code></pre>
 <pre><code>## precision    recall        f1 
 ## 0.7584270 0.7513915 0.7548928</code></pre>
-<pre class="r"><code>res_neg_sent &lt;- metrics(reviews_test, 2, &#39;svm&#39;) # precision, recall; F1 for the &#39;negative&#39; label in sentiment analysis
+<pre class="r"><code>res_neg_sent &lt;- metrics(reviews_test, 2, &#39;nb&#39;) # precision, recall; F1 for the &#39;negative&#39; label in sentiment analysis
 res_neg_sent</code></pre>
 <pre><code>## precision    recall        f1 
-## 0.7212179 0.7184834 0.7198481</code></pre>
+## 0.7483568 0.7554502 0.7518868</code></pre>
 <p>Results: NB [1] 0.7644320 0.7651445 0.7647881 [1] 0.7620397 0.7613208
 0.7616800</p>
 <p>Results: svm [1] 0.7283127 0.7120224 0.7200754 [1] 0.7149446
@@ -792,7 +785,7 @@ k_fold_cv &lt;- function(folds, my_dfm, reviews, model, model_name) {
     # predict the test set
     pred &lt;- predict(model_fit, test, force = TRUE)
     
-    results[[i]] &lt;- confusionMatrix(pred, as_factor(test$polarity))
+    results[[i]] &lt;- confusionMatrix(as_factor(pred), as_factor(test$polarity))
     
     cat(&quot;Fold &quot;, i, &quot; done\n&quot;)
   }
@@ -815,7 +808,7 @@ output_nb &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_nb, &quot;
 ## Fold  10  done
 ## Naive Bayes model done</code></pre>
 <pre class="r"><code># perform k-fold cross-validation for the SVM model
-output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quot;SVM&quot;)</code></pre>
+output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svmlin, &quot;SVM&quot;)</code></pre>
 <pre><code>## Fold  1  done
 ## Fold  2  done
 ## Fold  3  done
@@ -833,26 +826,26 @@ output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quo
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      386      153
-##   negative      147      380
+##   positive      350      290
+##   negative      183      243
 ##                                           
-##                Accuracy : 0.7186          
-##                  95% CI : (0.6905, 0.7454)
+##                Accuracy : 0.5563          
+##                  95% CI : (0.5259, 0.5864)
 ##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
+##     P-Value [Acc &gt; NIR] : 0.000132        
 ##                                           
-##                   Kappa : 0.4371          
+##                   Kappa : 0.1126          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.7728          
+##  Mcnemar&#39;s Test P-Value : 1.094e-06       
 ##                                           
-##             Sensitivity : 0.7242          
-##             Specificity : 0.7129          
-##          Pos Pred Value : 0.7161          
-##          Neg Pred Value : 0.7211          
+##             Sensitivity : 0.6567          
+##             Specificity : 0.4559          
+##          Pos Pred Value : 0.5469          
+##          Neg Pred Value : 0.5704          
 ##              Prevalence : 0.5000          
-##          Detection Rate : 0.3621          
-##    Detection Prevalence : 0.5056          
-##       Balanced Accuracy : 0.7186          
+##          Detection Rate : 0.3283          
+##    Detection Prevalence : 0.6004          
+##       Balanced Accuracy : 0.5563          
 ##                                           
 ##        &#39;Positive&#39; Class : positive        
 ##                                           
@@ -862,26 +855,26 @@ output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quo
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      372      128
-##   negative      161      405
+##   positive      354      325
+##   negative      179      208
 ##                                           
-##                Accuracy : 0.7289          
-##                  95% CI : (0.7011, 0.7554)
+##                Accuracy : 0.5272          
+##                  95% CI : (0.4967, 0.5575)
 ##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt; 2e-16         
+##     P-Value [Acc &gt; NIR] : 0.0404          
 ##                                           
-##                   Kappa : 0.4578          
+##                   Kappa : 0.0544          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.05979         
+##  Mcnemar&#39;s Test P-Value : 1.055e-10       
 ##                                           
-##             Sensitivity : 0.6979          
-##             Specificity : 0.7598          
-##          Pos Pred Value : 0.7440          
-##          Neg Pred Value : 0.7155          
+##             Sensitivity : 0.6642          
+##             Specificity : 0.3902          
+##          Pos Pred Value : 0.5214          
+##          Neg Pred Value : 0.5375          
 ##              Prevalence : 0.5000          
-##          Detection Rate : 0.3490          
-##    Detection Prevalence : 0.4690          
-##       Balanced Accuracy : 0.7289          
+##          Detection Rate : 0.3321          
+##    Detection Prevalence : 0.6370          
+##       Balanced Accuracy : 0.5272          
 ##                                           
 ##        &#39;Positive&#39; Class : positive        
 ##                                           
@@ -891,113 +884,113 @@ output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quo
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      388      144
-##   negative      145      390
-##                                           
-##                Accuracy : 0.7291          
-##                  95% CI : (0.7014, 0.7556)
-##     No Information Rate : 0.5005          
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
-##                                           
-##                   Kappa : 0.4583          
-##                                           
-##  Mcnemar&#39;s Test P-Value : 1               
-##                                           
-##             Sensitivity : 0.7280          
-##             Specificity : 0.7303          
-##          Pos Pred Value : 0.7293          
-##          Neg Pred Value : 0.7290          
-##              Prevalence : 0.4995          
-##          Detection Rate : 0.3636          
-##    Detection Prevalence : 0.4986          
-##       Balanced Accuracy : 0.7291          
-##                                           
-##        &#39;Positive&#39; Class : positive        
-##                                           
+##   positive      363      314
+##   negative      170      220
+##                                          
+##                Accuracy : 0.5464         
+##                  95% CI : (0.516, 0.5766)
+##     No Information Rate : 0.5005         
+##     P-Value [Acc &gt; NIR] : 0.001482       
+##                                          
+##                   Kappa : 0.093          
+##                                          
+##  Mcnemar&#39;s Test P-Value : 8.032e-11      
+##                                          
+##             Sensitivity : 0.6811         
+##             Specificity : 0.4120         
+##          Pos Pred Value : 0.5362         
+##          Neg Pred Value : 0.5641         
+##              Prevalence : 0.4995         
+##          Detection Rate : 0.3402         
+##    Detection Prevalence : 0.6345         
+##       Balanced Accuracy : 0.5465         
+##                                          
+##        &#39;Positive&#39; Class : positive       
+##                                          
 ## 
 ## [[4]]
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      387      155
-##   negative      147      378
-##                                           
-##                Accuracy : 0.717           
-##                  95% CI : (0.6889, 0.7438)
-##     No Information Rate : 0.5005          
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
-##                                           
-##                   Kappa : 0.4339          
-##                                           
-##  Mcnemar&#39;s Test P-Value : 0.6871          
-##                                           
-##             Sensitivity : 0.7247          
-##             Specificity : 0.7092          
-##          Pos Pred Value : 0.7140          
-##          Neg Pred Value : 0.7200          
-##              Prevalence : 0.5005          
-##          Detection Rate : 0.3627          
-##    Detection Prevalence : 0.5080          
-##       Balanced Accuracy : 0.7170          
-##                                           
-##        &#39;Positive&#39; Class : positive        
-##                                           
+##   positive      355      325
+##   negative      179      208
+##                                          
+##                Accuracy : 0.5276         
+##                  95% CI : (0.4972, 0.558)
+##     No Information Rate : 0.5005         
+##     P-Value [Acc &gt; NIR] : 0.04047        
+##                                          
+##                   Kappa : 0.0551         
+##                                          
+##  Mcnemar&#39;s Test P-Value : 1.055e-10      
+##                                          
+##             Sensitivity : 0.6648         
+##             Specificity : 0.3902         
+##          Pos Pred Value : 0.5221         
+##          Neg Pred Value : 0.5375         
+##              Prevalence : 0.5005         
+##          Detection Rate : 0.3327         
+##    Detection Prevalence : 0.6373         
+##       Balanced Accuracy : 0.5275         
+##                                          
+##        &#39;Positive&#39; Class : positive       
+##                                          
 ## 
 ## [[5]]
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      383      160
-##   negative      150      373
-##                                           
-##                Accuracy : 0.7092          
-##                  95% CI : (0.6809, 0.7363)
-##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
-##                                           
-##                   Kappa : 0.4184          
-##                                           
-##  Mcnemar&#39;s Test P-Value : 0.6092          
-##                                           
-##             Sensitivity : 0.7186          
-##             Specificity : 0.6998          
-##          Pos Pred Value : 0.7053          
-##          Neg Pred Value : 0.7132          
-##              Prevalence : 0.5000          
-##          Detection Rate : 0.3593          
-##    Detection Prevalence : 0.5094          
-##       Balanced Accuracy : 0.7092          
-##                                           
-##        &#39;Positive&#39; Class : positive        
-##                                           
+##   positive      377      312
+##   negative      156      221
+##                                          
+##                Accuracy : 0.561          
+##                  95% CI : (0.5306, 0.591)
+##     No Information Rate : 0.5            
+##     P-Value [Acc &gt; NIR] : 3.818e-05      
+##                                          
+##                   Kappa : 0.122          
+##                                          
+##  Mcnemar&#39;s Test P-Value : 7.786e-13      
+##                                          
+##             Sensitivity : 0.7073         
+##             Specificity : 0.4146         
+##          Pos Pred Value : 0.5472         
+##          Neg Pred Value : 0.5862         
+##              Prevalence : 0.5000         
+##          Detection Rate : 0.3537         
+##    Detection Prevalence : 0.6463         
+##       Balanced Accuracy : 0.5610         
+##                                          
+##        &#39;Positive&#39; Class : positive       
+##                                          
 ## 
 ## [[6]]
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      395      140
-##   negative      138      393
+##   positive      353      311
+##   negative      180      222
 ##                                           
-##                Accuracy : 0.7392          
-##                  95% CI : (0.7117, 0.7653)
+##                Accuracy : 0.5394          
+##                  95% CI : (0.5089, 0.5696)
 ##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
+##     P-Value [Acc &gt; NIR] : 0.005492        
 ##                                           
-##                   Kappa : 0.4784          
+##                   Kappa : 0.0788          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.9522          
+##  Mcnemar&#39;s Test P-Value : 4.442e-09       
 ##                                           
-##             Sensitivity : 0.7411          
-##             Specificity : 0.7373          
-##          Pos Pred Value : 0.7383          
-##          Neg Pred Value : 0.7401          
+##             Sensitivity : 0.6623          
+##             Specificity : 0.4165          
+##          Pos Pred Value : 0.5316          
+##          Neg Pred Value : 0.5522          
 ##              Prevalence : 0.5000          
-##          Detection Rate : 0.3705          
-##    Detection Prevalence : 0.5019          
-##       Balanced Accuracy : 0.7392          
+##          Detection Rate : 0.3311          
+##    Detection Prevalence : 0.6229          
+##       Balanced Accuracy : 0.5394          
 ##                                           
 ##        &#39;Positive&#39; Class : positive        
 ##                                           
@@ -1007,26 +1000,26 @@ output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quo
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      399      165
-##   negative      134      368
+##   positive      370      355
+##   negative      163      178
 ##                                           
-##                Accuracy : 0.7195          
-##                  95% CI : (0.6915, 0.7463)
+##                Accuracy : 0.5141          
+##                  95% CI : (0.4836, 0.5445)
 ##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt; 2e-16         
+##     P-Value [Acc &gt; NIR] : 0.1872          
 ##                                           
-##                   Kappa : 0.439           
+##                   Kappa : 0.0281          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.08275         
+##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
 ##                                           
-##             Sensitivity : 0.7486          
-##             Specificity : 0.6904          
-##          Pos Pred Value : 0.7074          
-##          Neg Pred Value : 0.7331          
+##             Sensitivity : 0.6942          
+##             Specificity : 0.3340          
+##          Pos Pred Value : 0.5103          
+##          Neg Pred Value : 0.5220          
 ##              Prevalence : 0.5000          
-##          Detection Rate : 0.3743          
-##    Detection Prevalence : 0.5291          
-##       Balanced Accuracy : 0.7195          
+##          Detection Rate : 0.3471          
+##    Detection Prevalence : 0.6801          
+##       Balanced Accuracy : 0.5141          
 ##                                           
 ##        &#39;Positive&#39; Class : positive        
 ##                                           
@@ -1036,26 +1029,26 @@ output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quo
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      391      138
-##   negative      142      395
+##   positive      380      336
+##   negative      153      197
 ##                                           
-##                Accuracy : 0.7373          
-##                  95% CI : (0.7098, 0.7635)
+##                Accuracy : 0.5413          
+##                  95% CI : (0.5108, 0.5715)
 ##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
+##     P-Value [Acc &gt; NIR] : 0.003839        
 ##                                           
-##                   Kappa : 0.4747          
+##                   Kappa : 0.0826          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.8577          
+##  Mcnemar&#39;s Test P-Value : &lt; 2.2e-16       
 ##                                           
-##             Sensitivity : 0.7336          
-##             Specificity : 0.7411          
-##          Pos Pred Value : 0.7391          
-##          Neg Pred Value : 0.7356          
+##             Sensitivity : 0.7129          
+##             Specificity : 0.3696          
+##          Pos Pred Value : 0.5307          
+##          Neg Pred Value : 0.5629          
 ##              Prevalence : 0.5000          
-##          Detection Rate : 0.3668          
-##    Detection Prevalence : 0.4962          
-##       Balanced Accuracy : 0.7373          
+##          Detection Rate : 0.3565          
+##    Detection Prevalence : 0.6717          
+##       Balanced Accuracy : 0.5413          
 ##                                           
 ##        &#39;Positive&#39; Class : positive        
 ##                                           
@@ -1065,55 +1058,55 @@ output_svm &lt;- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, &quo
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      390      139
-##   negative      143      394
-##                                           
-##                Accuracy : 0.7355          
-##                  95% CI : (0.7079, 0.7617)
-##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
-##                                           
-##                   Kappa : 0.4709          
-##                                           
-##  Mcnemar&#39;s Test P-Value : 0.8582          
-##                                           
-##             Sensitivity : 0.7317          
-##             Specificity : 0.7392          
-##          Pos Pred Value : 0.7372          
-##          Neg Pred Value : 0.7337          
-##              Prevalence : 0.5000          
-##          Detection Rate : 0.3659          
-##    Detection Prevalence : 0.4962          
-##       Balanced Accuracy : 0.7355          
-##                                           
-##        &#39;Positive&#39; Class : positive        
-##                                           
+##   positive      337      328
+##   negative      196      205
+##                                          
+##                Accuracy : 0.5084         
+##                  95% CI : (0.478, 0.5389)
+##     No Information Rate : 0.5            
+##     P-Value [Acc &gt; NIR] : 0.3013         
+##                                          
+##                   Kappa : 0.0169         
+##                                          
+##  Mcnemar&#39;s Test P-Value : 1.048e-08      
+##                                          
+##             Sensitivity : 0.6323         
+##             Specificity : 0.3846         
+##          Pos Pred Value : 0.5068         
+##          Neg Pred Value : 0.5112         
+##              Prevalence : 0.5000         
+##          Detection Rate : 0.3161         
+##    Detection Prevalence : 0.6238         
+##       Balanced Accuracy : 0.5084         
+##                                          
+##        &#39;Positive&#39; Class : positive       
+##                                          
 ## 
 ## [[10]]
 ## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction positive negative
-##   positive      387      137
-##   negative      146      396
+##   positive      373      328
+##   negative      160      205
 ##                                           
-##                Accuracy : 0.7345          
-##                  95% CI : (0.7069, 0.7608)
+##                Accuracy : 0.5422          
+##                  95% CI : (0.5118, 0.5724)
 ##     No Information Rate : 0.5             
-##     P-Value [Acc &gt; NIR] : &lt;2e-16          
+##     P-Value [Acc &gt; NIR] : 0.003193        
 ##                                           
-##                   Kappa : 0.469           
+##                   Kappa : 0.0844          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.6344          
+##  Mcnemar&#39;s Test P-Value : 4.039e-14       
 ##                                           
-##             Sensitivity : 0.7261          
-##             Specificity : 0.7430          
-##          Pos Pred Value : 0.7385          
-##          Neg Pred Value : 0.7306          
+##             Sensitivity : 0.6998          
+##             Specificity : 0.3846          
+##          Pos Pred Value : 0.5321          
+##          Neg Pred Value : 0.5616          
 ##              Prevalence : 0.5000          
-##          Detection Rate : 0.3630          
-##    Detection Prevalence : 0.4916          
-##       Balanced Accuracy : 0.7345          
+##          Detection Rate : 0.3499          
+##    Detection Prevalence : 0.6576          
+##       Balanced Accuracy : 0.5422          
 ##                                           
 ##        &#39;Positive&#39; Class : positive        
 ## </code></pre>
@@ -1155,7 +1148,7 @@ results_nb</code></pre>
 ## 0.7690861 0.7699342 0.7677752 0.7687232</code></pre>
 <pre class="r"><code>results_svm</code></pre>
 <pre><code>##  Accuracy Precision    Recall        F1 
-## 0.7268812 0.7269512 0.7274438 0.7270457</code></pre>
+## 0.5363908 0.5285209 0.6775488 0.5936456</code></pre>
 </div>
 </div>
 <div id="area-under-precision-recall-curve" class="section level1">
@@ -1258,9 +1251,30 @@ naive_bayes_predict_dfm &lt;- function(model, new_dfm) {
 
 
 out_model &lt;- naive_bayes_train_dfm(dfm_train, dfm_train$polarity)
-pred_nb_manual &lt;- naive_bayes_predict_dfm(out_model, dfm_test)
+pred_nb_manual &lt;- naive_bayes_predict_dfm(out_model, dfm_test)</code></pre>
+<pre class="r"><code>true_labels &lt;- dfm_test$polarity
+predicted &lt;- pred_nb_manual
 
-# accuracy</code></pre>
+confusion_matrix &lt;- table(True = dfm_test$polarity, Predicted = pred_nb_manual)
+
+TP &lt;- confusion_matrix[&quot;positive&quot;, &quot;positive&quot;]
+FN &lt;- confusion_matrix[&quot;positive&quot;, &quot;negative&quot;]
+FP &lt;- confusion_matrix[&quot;negative&quot;, &quot;positive&quot;]
+
+# Calculate recall (sensitivity)
+recall &lt;- TP / (TP + FN)
+
+# Calculate precision (positive predictive value / specificity)
+precision &lt;- TP / (TP + FP)
+
+F1 &lt;- 2 * precision * recall / (precision + recall)
+
+cat(&quot;Recall:&quot;, recall, &quot;\n&quot;)</code></pre>
+<pre><code>## Recall: 0.7513915</code></pre>
+<pre class="r"><code>cat(&quot;Precision:&quot;, precision, &quot;\n&quot;)</code></pre>
+<pre><code>## Precision: 0.758427</code></pre>
+<pre class="r"><code>cat(&quot;F1 Score:&quot;, F1, &quot;\n&quot;)</code></pre>
+<pre><code>## F1 Score: 0.7548928</code></pre>
 </div>
 
 

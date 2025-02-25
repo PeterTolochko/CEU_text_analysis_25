@@ -50,7 +50,10 @@ https://tutorials.quanteda.io/basic-operations/corpus/corpus/
 Create a corpus and look at a summary.
 
 ```{r}
+# install.packages("quanteda")
+
 library(quanteda)
+
 reviews_corpus <- corpus(reviews)
 summary(reviews_corpus, 5)
 ```
@@ -116,6 +119,7 @@ Fit a Naïve Bayes Classifier on the training dfm and save the learned model in 
 The Naïve Bayes Classifier is part of the library quanteda.textmodels. 
 
 ```{r}
+# install.packages("quanteda.textmodels")
 library(quanteda.textmodels)
 model_nb <- textmodel_nb(dfm_train, dfm_train$polarity, prior = "docfreq") #Prior distributions refer to the prior probabilities assigned to the training classes
 
@@ -125,7 +129,7 @@ model_nb <- textmodel_nb(dfm_train, dfm_train$polarity, prior = "docfreq") #Prio
 Fit a Linear SVM classifier on the training dfm and save the learned model in the object 'model.svm'.
 
 ```{r}
-model_svm <- textmodel_svm(dfm_train, dfm_train$polarity)
+model_svm <- textmodel_svmlin(dfm_train, dfm_train$polarity)
 
 ```
 
@@ -157,6 +161,7 @@ Add the labels predicted by the model to the initial dataframe. Name the new col
 
 
 ```{r}
+
 colnames(reviews)
 
 reviews$id <- 1:nrow(reviews)
@@ -232,15 +237,6 @@ reviews_test <- reviews_test %>%
 
 ```{r}
 
-# metrics <- function(reviews_test, categ) {
-#   results_table <- table(ifelse(reviews_test$polarity == categ, 1, 0),
-#   ifelse(reviews_test$polarity_svm == categ, 1, 0))
-#   recall <- results_table[2, 2] / (results_table[2, 2] + results_table[2, 1])
-#   precision <- results_table[2, 2] / (results_table[2, 2] + results_table[1, 2])
-#   f1 <- 2 * recall * precision / (recall + precision)
-# 
-#   return(c(precision, recall, f1))
-# }
 
 
 metrics <- function(reviews_test, categ, model = c("nb", "svm")) {
@@ -379,7 +375,7 @@ Precision, recall, F1
 res_pos_sent <- metrics(reviews_test, 1, 'nb') # precision, recall, F1 for the 'positive' label in sentiment analysis
 res_pos_sent
 
-res_neg_sent <- metrics(reviews_test, 2, 'svm') # precision, recall; F1 for the 'negative' label in sentiment analysis
+res_neg_sent <- metrics(reviews_test, 2, 'nb') # precision, recall; F1 for the 'negative' label in sentiment analysis
 res_neg_sent
 ```
 
@@ -468,7 +464,7 @@ k_fold_cv <- function(folds, my_dfm, reviews, model, model_name) {
     # predict the test set
     pred <- predict(model_fit, test, force = TRUE)
     
-    results[[i]] <- confusionMatrix(pred, as_factor(test$polarity))
+    results[[i]] <- confusionMatrix(as_factor(pred), as_factor(test$polarity))
     
     cat("Fold ", i, " done\n")
   }
@@ -486,7 +482,7 @@ output_nb <- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_nb, "Naive Ba
 
 ```{r, warning=FALSE}
 # perform k-fold cross-validation for the SVM model
-output_svm <- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svm, "SVM")
+output_svm <- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svmlin, "SVM")
 ```
 
 ```{r}
@@ -651,8 +647,30 @@ naive_bayes_predict_dfm <- function(model, new_dfm) {
 out_model <- naive_bayes_train_dfm(dfm_train, dfm_train$polarity)
 pred_nb_manual <- naive_bayes_predict_dfm(out_model, dfm_test)
 
-# accuracy
 
 
+```
+
+```{r}
+true_labels <- dfm_test$polarity
+predicted <- pred_nb_manual
+
+confusion_matrix <- table(True = dfm_test$polarity, Predicted = pred_nb_manual)
+
+TP <- confusion_matrix["positive", "positive"]
+FN <- confusion_matrix["positive", "negative"]
+FP <- confusion_matrix["negative", "positive"]
+
+# Calculate recall (sensitivity)
+recall <- TP / (TP + FN)
+
+# Calculate precision (positive predictive value / specificity)
+precision <- TP / (TP + FP)
+
+F1 <- 2 * precision * recall / (precision + recall)
+
+cat("Recall:", recall, "\n")
+cat("Precision:", precision, "\n")
+cat("F1 Score:", F1, "\n")
 
 ```
