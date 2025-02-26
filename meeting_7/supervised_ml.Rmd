@@ -440,7 +440,7 @@ dfm_reviews_trim
 
 set.seed(123)
 # create a 10-fold cross-validation
-folds <- createFolds(reviews$polarity, k = 10, list = TRUE)
+folds <- createFolds(reviews$polarity, k = 15, list = TRUE)
 ```
 
 ## Perfom k-fold cross-validation
@@ -449,6 +449,8 @@ folds <- createFolds(reviews$polarity, k = 10, list = TRUE)
 # create a function to perform k-fold cross-validation
 k_fold_cv <- function(folds, my_dfm, reviews, model, model_name) {
   results <- list()
+  
+  
   for (i in 1:length(folds)) {
     # get the training and test set
     
@@ -487,6 +489,7 @@ output_svm <- k_fold_cv(folds, dfm_reviews_trim, reviews, textmodel_svmlin, "SVM
 
 ```{r}
 output_svm
+output_nb
 ```
 
 ```{r}

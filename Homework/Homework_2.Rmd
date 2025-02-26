@@ -1,0 +1,78 @@
+---
+title: "Homework Assignment: Supervised ML (DEADLINE: 12/03/2025)"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Overview
+
+You can use any machine learning package that you want (such as **quanteda** or **caret**).
+
+If you have any questions about the homework, please send me an email: petro.tolochko@univie.ac.at
+
+# Dataset
+
+You can work with a text dataset of movie reviews that we've worked in class (in the `data` folder), or another text corpus of your choice with labeled data.
+
+# Data Exploration and Preprocessing
+
+1. **Load and Inspect the Data**  
+   - (If using your own dataset) Summarize the number of documents and the distribution of sentiment labels.
+
+2. **Text Preprocessing**  
+   - Convert text to lowercase.
+   - Remove punctuation, numbers, and stopwords.
+   - Perform stemming or lemmatization.
+   - Create a corpus from the raw text using a package such as **quanteda**.
+
+
+# Task 1: Feature Engineering for Prediction
+
+
+You will create several types of document-feature matrices (DFMs):
+
+
+1.	**Bag-of-Words (Counts):**
+  - Build a dfm based on raw word counts.
+
+2.	**TF‑IDF Representation:**
+  - Transform your bag-of-words dfm to weight terms by their inverse document frequency.
+
+3.	**n‑grams:**
+  - Construct a dfm that includes both unigrams and bigrams to capture contextual information.
+
+4.	**Feature Selection:**
+  - Explore methods to reduce the number of features, e.g., remove terms by frequency
+  
+After you're done with the feature engineering, you will build a baseline classifier using a Naive Bayes model (or any other model of your choice). You will compare the performance of the classifier across different feature representations.
+
+**Train a baseline model for each feature representation and evaluate its performance.**
+
+Report the results (e.g., accuracy, precision, recall, F1-score) for each model and feature representation. Discuss the impact of feature engineering choices on classification performance.
+
+
+# Task 2: Unbalanced Data
+
+In many real-world applications (especially in text classification) datasets can be highly imbalanced, meaning one class is far more prevalent than another. This can lead to biased models that favor the majority class.
+
+In the `Homework/data` folder of our GitHub repository you will find a `reviews` dataset that we've worked with, but with imbalanced classes (`reviews_imbalanced.csv`).
+
+# Objectives
+
+- Learn how to work with an imbalanced dataset.
+- Apply undersampling and oversampling to balance the dataset.
+- Train and evaluate a classifier.
+- Analyze the differences in model performance when using unbalanced versus balanced data.
+
+Undersampling and oversampling are two common techniques to address class imbalance. Undersampling reduces the number of instances in the majority class, while oversampling increases the number of instances in the minority class.
+
+The simplest way to undersample is to randomly remove instances from the majority class. For oversampling, you can use techniques such as SMOTE (Synthetic Minority Over-sampling Technique) to generate synthetic samples. However, for this assignment, a random oversampling approach is sufficient (simply duplicate existing minority class samples at random until the classes are balanced).
+
+You should train a NB classifier (or any other classification model you want) on:
+
+- The original imbalanced dataset.
+- The dataset after undersampling the majority class.
+- The dataset after oversampling the minority class.
+
+Report the results (e.g., accuracy, precision, recall, and F1) for those models and discuss (in a sentence or two) the impact of class imbalance on classification performance.
