@@ -72,6 +72,7 @@ We will use multinomial models to generate data. Generate texts about bananas an
 set.seed(123)
 
 # Priors
+
 theta_1 <- rdirichlet(1, c(1, 6))
 theta_2 <- rdirichlet(1, c(6, 1))
 
@@ -80,20 +81,20 @@ vocabulary <- c("banana", "chocolate")
 w <- 200 # numbers of words to generate
 n <- 100
 
-generate_text <- function(n, theta) {
+generate_text <- function(w, theta) {
   sample(vocabulary, rbinom(1, w, .5), replace = TRUE, prob = theta) %>%
   paste(collapse = " ")
 }
 
 
-
 text_type_1 <- replicate(n, generate_text(w, theta_1))
+
 text_type_2 <- replicate(n, generate_text(w, theta_2))
 
 
-
-
 all_texts <- c(text_type_1, text_type_2)
+
+
 
 dtm <- DocumentTermMatrix(all_texts) %>% as.matrix()
 dtm
@@ -124,6 +125,7 @@ clustering.kmeans
 Let's look at the cluster assignment:
 
 ```{r}
+
 cluster <- clustering.kmeans$cluster
 centroids <- clustering.kmeans$centers
 
@@ -155,7 +157,10 @@ Ok, let's add some more data!
 
 text_type_1 <- replicate(n, generate_text(w, rdirichlet(1, c(2, 8))))
 text_type_2 <- replicate(n, generate_text(w, rdirichlet(1, c(8, 2))))
-text_type_3 <- replicate(500, generate_text(w + 100, rdirichlet(1, c(50, 50))))
+
+
+
+text_type_3 <- replicate(n, generate_text(w, rdirichlet(1, c(1, 1))))
 
 
 
@@ -164,9 +169,9 @@ all_texts <- c(text_type_1, text_type_2, text_type_3)
 dtm <- DocumentTermMatrix(all_texts) %>% as.matrix()
 
 dtm %>% as_tibble() %>%
-  mutate(class = c(rep(1, n), rep(2, n), rep(3, 500))) %>%
+  mutate(class = c(rep(1, n), rep(2, n), rep(3, n))) %>%
   ggplot() +
-  geom_point(aes(banana, chocolate, color = factor(class))) +
+  geom_point(aes(banana, chocolate)) +
   theme_tufte()
 
 
@@ -175,7 +180,7 @@ dtm %>% as_tibble() %>%
 A bit more interesting!
 
 ```{r}
-clustering.kmeans <- kmeans(dtm, 3)
+clustering.kmeans <- kmeans(dtm, 2)
 clustering.kmeans
 
 cluster <- clustering.kmeans$cluster
@@ -204,7 +209,7 @@ wss <- function(k) {
   kmeans(dtm, k, nstart = 10)$tot.withinss
 }
 
-# Compute and plot wss for k = 1 to k = 3
+# Compute and plot wss for k = 1 to k = 15
 k.values <- 1:15
 
 # extract wss for 2-15 clusters
@@ -229,6 +234,7 @@ We will be using the `stm` package and `sotu` data.
 First, let's load up the data:
 
 ```{r}
+
 sotu <- sotu_text %>% as_tibble()
 sotu_metadata <- sotu_meta %>% as_tibble()
 
@@ -247,6 +253,7 @@ Let's inspect a text:
 ```{r}
 sotu$value[1]
 
+sotu$value[220]
 
 ```
 
@@ -328,12 +335,15 @@ sotu_data_prepd <- prepDocuments(sotu_data$documents,
                                  sotu_data$vocab,
                                  sotu_data$meta)
 
-sotu_topic_10 <- stm(documents = sotu_data_prepd$documents,
+sotu_topic_15 <- stm(documents = sotu_data_prepd$documents,
                      sotu_data_prepd$vocab,
                      K = 15,
                      max.em.its = 75,
                      data = sotu_data_prepd$meta,
                      init.type = "Spectral")
+
+labelTopics(sotu_topic_15)
+plot(sotu_topic_15, n = 10)
 ```
 
 
