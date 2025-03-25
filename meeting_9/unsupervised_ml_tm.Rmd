@@ -379,7 +379,8 @@ This takes a very long time! (I already ran it)
 #                      data = sotu_data_prepd$meta,
 #                      init.type = "Spectral")
 
-load("many_models.RData")
+
+load("/Users/petrotolochko/Desktop/Teaching/CEU_text_analysis_25/meeting_9/many_models.RData")
 ```
 
 
@@ -486,8 +487,8 @@ Ok, let's choose the K=60 model.
 ```{r, print=FALSE}
 sotu_topic_60 <- stm(documents = sotu_data_prepd$documents,
                     vocab = sotu_data_prepd$vocab,
-                    K = 60,
-                     prevalence =~ party + s(year),
+                    K = 10,
+                     prevalence = ~ party + s(year),
                      max.em.its = 75,
                      data = sotu_data_prepd$meta,
                      init.type = "Spectral",
@@ -504,7 +505,7 @@ plot(sotu_topic_60)
 
 
 ```{r}
-cloud(sotu_topic_60, topic=13, scale=c(2,.25))
+cloud(sotu_topic_60, topic=1, scale=c(2,.25))
 
 ```
 
@@ -512,13 +513,15 @@ cloud(sotu_topic_60, topic=13, scale=c(2,.25))
 ```{r}
 
 
-sotu_topic_60_effects <- estimateEffect(1:20 ~ party + s(year), sotu_topic_60, meta = sotu_data_prepd$meta, uncertainty = "Global")
+sotu_topic_60_effects <- estimateEffect(1:10 ~ party + s(year), sotu_topic_60, meta = sotu_data_prepd$meta, uncertainty = "Global")
 summary(sotu_topic_60_effects, topics=3)
 
 
 
-plot(sotu_topic_60_effects, covariate = "party", topics = c(1:3), model = sotu_topic_60, method = "pointestimate",
-     main = "Effect of Party on Topic Proportion", labeltype = "custom",
+plot(sotu_topic_60_effects, covariate = "party", topics = 2, model = sotu_topic_60,
+     method = "pointestimate",
+     main = "Effect of Party on Topic Proportion",
+     labeltype = "custom",
      custom.labels = c("Republican", "Democratic")
      )
 
@@ -573,6 +576,8 @@ sotu_topic_5 <- stm(documents = sotu_data_prepd$documents,
                      init.type = "Spectral",
                      verbose=TRUE
 )
+
+labelTopics(sotu_topic_5)
 
 ```
 
