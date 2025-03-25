@@ -83,7 +83,7 @@ for (statement in additional_statements) {
 
 # classification
 # Query the model to classify into one of the provided classes
-reviews_test <- read_csv("~/Desktop/Teaching/CEU_text_as_data/meeting_11/rotten_tomatoes_nb_svm_test.csv")
+reviews_test <- read_csv("~/Desktop/Teaching/CEU_text_analysis_25/meeting_11/rotten_tomatoes_nb_svm_test.csv")
 
 reviews_test$polarity_llama <- NA
 
@@ -110,7 +110,7 @@ for (i in 1:nrow(small_test)) {
 small_test$polarity_llama_binary <- as.numeric(gsub("[^1 | 2]", "", small_test$polarity_llama))
 
 # small_test %>% write_csv("~/Desktop/Teaching/CEU_text_as_data/meeting_11/rotten_tomatoes_llama.csv")
-small_test <- read_csv("~/Desktop/Teaching/CEU_text_as_data/meeting_11/rotten_tomatoes_llama.csv")
+small_test <- read_csv("~/Desktop/Teaching/CEU_text_analysis_25/meeting_11/rotten_tomatoes_llama.csv")
 
 
 small_test <- small_test %>%
