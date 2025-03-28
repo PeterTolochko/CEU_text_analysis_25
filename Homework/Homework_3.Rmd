@@ -1,0 +1,61 @@
+---
+title: "Homework Assignment: Unsupervised ML (DEADLINE: 11/04/2025)"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Overview
+
+You can use any machine learning package that you want (such as **quanteda** or **caret**).
+
+If you have any questions about the homework, please send me an email: petro.tolochko@univie.ac.at
+
+# Dataset
+
+You can work with any text dataset. If you don't have a dataset in mind, you can use `20 Newsgroups` dataset in the `data` folder (`20_newsgroup.csv`)
+
+# Data Exploration and Preprocessing
+
+ **Text Preprocessing**  
+ 
+   - Convert text to lowercase.
+   - Remove punctuation, numbers, and stopwords.
+   - Perform stemming or lemmatization.
+   - Create a corpus from the raw text using a package such as **quanteda**.
+
+You can choose to perform any preprocessing steps you want. In a few sentences explain the choices you made.
+
+# Task 1: Document Clustering
+
+Convert the preprocessed text into a document-term matrix using TF-IDF.
+
+**Cluster the documents using a K-means algorithm.**
+
+You can choose the number of clusters (`k`) based on the elbow method or any other technique you prefer. Briefly explain your choice.
+
+**Evaluate the clustering results.**
+
+Run the K-means algorithm several times (with different seeds).
+
+You can use any metric you want to evaluate the clustering results. For example, you can use the silhouette score, the Davies-Bouldin index, or within-cluster sum of squares.
+
+Do the models ran on different seeds differ? If so, how?
+
+Briefly describe each cluster — are there interpretable themes?
+
+# Task 2: Document Classification
+
+Use Latent Dirichlet Allocation (for R users -- you can use the `stm` package, for Python users -- any library that does LDA, e.g., `gensim`) to extract latent topics from the documents.
+
+Once again, the choice of preprocessing is yours, but justify it in a couple of sentences. 
+
+Estimate 3 LDA models for different topic numbers, e.g., $K = 3, 7, 10$ (the choice of $K$ is yours).
+
+Explore how coherent and meaningful the topics are.
+
+Answer the following in free text below:
+
+  - Which value of K produced the most meaningful topics? Why?
+	-	Did all topics make sense? Were there any that were incoherent or redundant?
+	-	Do smaller or larger K values seem to work better for your dataset?
+	-	If you were using this model in a real application (e.g., content analysis, recommender system), which K would you choose and why?

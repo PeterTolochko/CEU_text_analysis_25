@@ -109,7 +109,6 @@ for (i in 1:nrow(small_test)) {
 # extract numbers 1 or 2 from the response
 small_test$polarity_llama_binary <- as.numeric(gsub("[^1 | 2]", "", small_test$polarity_llama))
 
-# small_test %>% write_csv("~/Desktop/Teaching/CEU_text_as_data/meeting_11/rotten_tomatoes_llama.csv")
 small_test <- read_csv("~/Desktop/Teaching/CEU_text_analysis_25/meeting_11/rotten_tomatoes_llama.csv")
 
 
